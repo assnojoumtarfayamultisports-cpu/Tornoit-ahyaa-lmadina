@@ -1,52 +1,58 @@
- document.addEventListener("DOMContentLoaded", async () => {
+ const SUPABASE_URL = "https://ipqvxnvsxpnqszmhbxgo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bv249Hzw8qug45r_B5lspw_CN-mdaLK";
 
-  const SUPABASE_URL = "https://ipqvxnvsxpnqszmhbxgo.supabase.co";
-  const SUPABASE_KEY = "ضع_هنا_المفتاح_العام";
-
-  async function getMatches() {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/matches?select=*`,
+async function loadMatches() {
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/matches?select=*&order=match_date.asc`,
       {
         headers: {
           apikey: SUPABASE_KEY,
-          Authorization: `Bearer ${SUPABASE_KEY}`
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json"
         }
       }
     );
 
-    return await res.json();
-  }
+    const matches = await response.json();
 
-  const matches = await getMatches();
+    const tbody = document.getElementById("matches-body");
 
-  let rows = "";
+    if (!tbody) {
+      console.error("matches-body not found");
+      return;
+    }
 
-  matches.forEach(match => {
-    rows += `
-      <tr>
+    tbody.innerHTML = "";
+
+    const days = [
+      "الأحد",
+      "الاثنين",
+      "الثلاثاء",
+      "الأربعاء",
+      "الخميس",
+      "الجمعة",
+      "السبت"
+    ];
+
+    matches.forEach(match => {
+      const dateObj = new Date(match.match_date);
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${days[dateObj.getDay()]}</td>
         <td>${match.match_date}</td>
         <td>${match.group_name}</td>
         <td>${match.team1} × ${match.team2}</td>
-      </tr>
-    `;
-  });
+      `;
 
-  document.body.innerHTML = `
-    <div class="header">
-      <h1>بطولة أحياء المدينة لكرة القدم المصغرة 2026</h1>
-    </div>
+      tbody.appendChild(tr);
+    });
 
-    <table border="1" width="100%">
-      <thead>
-        <tr>
-          <th>التاريخ</th>
-          <th>المجموعة</th>
-          <th>المباراة</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${rows}
-      </tbody>
-    </table>
-  `;
-});
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+loadMatches();
