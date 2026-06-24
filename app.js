@@ -1,159 +1,52 @@
- document.addEventListener("DOMContentLoaded", () => {
+ document.addEventListener("DOMContentLoaded", async () => {
 
-document.body.innerHTML = `
-<div class="header">
-    <h1>بطولة أحياء المدينة لكرة القدم المصغرة 2026</h1>
-    <p>جمعية نجوم طرفاية متعددة الرياضات</p>
-</div>
+  const SUPABASE_URL = "https://ipqvxnvsxpnqszmhbxgo.supabase.co";
+  const SUPABASE_KEY = "ضع_هنا_المفتاح_العام";
 
-<div class="container">
+  async function getMatches() {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/matches?select=*`,
+      {
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`
+        }
+      }
+    );
 
-    <div class="groups">
+    return await res.json();
+  }
 
-        <div class="card">
-            <h2>المجموعة A</h2>
-            <ol>
-                <li>اتحاد جبلي</li>
-                <li>نادي الصداقة</li>
-                <li>فريق الإنبعاث</li>
-                <li>شباب طرفاية</li>
-                <li>الحي الجديد</li>
-            </ol>
-        </div>
+  const matches = await getMatches();
 
-        <div class="card">
-            <h2>المجموعة B</h2>
-            <ol>
-                <li>انتر طرفاية</li>
-                <li>حي التقدم</li>
-                <li>الحي الشرقي</li>
-                <li>اتحاد لمكيزرة</li>
-                <li>حي المحيط</li>
-            </ol>
-        </div>
+  let rows = "";
 
+  matches.forEach(match => {
+    rows += `
+      <tr>
+        <td>${match.match_date}</td>
+        <td>${match.group_name}</td>
+        <td>${match.team1} × ${match.team2}</td>
+      </tr>
+    `;
+  });
+
+  document.body.innerHTML = `
+    <div class="header">
+      <h1>بطولة أحياء المدينة لكرة القدم المصغرة 2026</h1>
     </div>
 
-    <h2 style="text-align:center;margin-top:30px;">
-        برنامج مباريات الدور الأول
-    </h2>
-
-    <table>
-        <thead>
-            <tr>
-                <th>اليوم</th>
-                <th>التاريخ</th>
-                <th>المجموعة</th>
-                <th>المباريات</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            <tr>
-                <td>الإثنين</td>
-                <td>22/06/2026</td>
-                <td>A</td>
-                <td>
-                    اتحاد جبلي × نادي الصداقة<br>
-                    فريق الإنبعاث × شباب طرفاية
-                </td>
-            </tr>
-
-            <tr>
-                <td>الثلاثاء</td>
-                <td>23/06/2026</td>
-                <td>B</td>
-                <td>
-                    انتر طرفاية × حي التقدم<br>
-                    الحي الشرقي × اتحاد لمكيزرة
-                </td>
-            </tr>
-
-            <tr>
-                <td>الأربعاء</td>
-                <td>24/06/2026</td>
-                <td>A</td>
-                <td>
-                    اتحاد جبلي × فريق الإنبعاث<br>
-                    نادي الصداقة × الحي الجديد
-                </td>
-            </tr>
-
-            <tr>
-                <td>الخميس</td>
-                <td>25/06/2026</td>
-                <td>B</td>
-                <td>
-                    انتر طرفاية × الحي الشرقي<br>
-                    حي التقدم × حي المحيط
-                </td>
-            </tr>
-
-            <tr>
-                <td>الجمعة</td>
-                <td>26/06/2026</td>
-                <td>A</td>
-                <td>
-                    اتحاد جبلي × شباب طرفاية<br>
-                    نادي الصداقة × الحي الجديد
-                </td>
-            </tr>
-
-            <tr>
-                <td>السبت</td>
-                <td>27/06/2026</td>
-                <td>B</td>
-                <td>
-                    انتر طرفاية × اتحاد لمكيزرة<br>
-                    الحي الشرقي × حي المحيط
-                </td>
-            </tr>
-
-            <tr>
-                <td>الأحد</td>
-                <td>28/06/2026</td>
-                <td>A</td>
-                <td>
-                    اتحاد جبلي × الحي الجديد<br>
-                    نادي الصداقة × شباب طرفاية
-                </td>
-            </tr>
-
-            <tr>
-                <td>الإثنين</td>
-                <td>29/06/2026</td>
-                <td>B</td>
-                <td>
-                    انتر طرفاية × حي المحيط<br>
-                    حي التقدم × اتحاد لمكيزرة
-                </td>
-            </tr>
-
-            <tr>
-                <td>الثلاثاء</td>
-                <td>30/06/2026</td>
-                <td>A</td>
-                <td>
-                    فريق الإنبعاث × نادي الصداقة<br>
-                    شباب طرفاية × الحي الجديد
-                </td>
-            </tr>
-
-            <tr>
-                <td>الأربعاء</td>
-                <td>01/07/2026</td>
-                <td>B</td>
-                <td>
-                    حي التقدم × الحي الشرقي<br>
-                    اتحاد لمكيزرة × حي المحيط
-                </td>
-            </tr>
-
-        </tbody>
+    <table border="1" width="100%">
+      <thead>
+        <tr>
+          <th>التاريخ</th>
+          <th>المجموعة</th>
+          <th>المباراة</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
     </table>
-
-</div>
-`;
-
+  `;
 });
